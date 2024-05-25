@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "423922817981",
+    "project_id": "health-sync-ai",
+    "storage_bucket": "health-sync-ai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423922817981:android:041bd1ffda2ff7ee2ad0d4",
+        "android_client_info": {
+          "package_name": "com.example.health_sync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTQjqLnXAbUM5aWYr_MeZF_18hTEzzkVs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
