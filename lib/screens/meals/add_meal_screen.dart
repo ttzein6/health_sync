@@ -140,14 +140,6 @@ class _AddMealScreenState extends State<AddMealScreen> {
           child: ListView(
             children: [
               const SizedBox(height: 20),
-              const Text(
-                "OR",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(height: 20),
               _image == null
                   ? const Text('No image selected.')
                   : Align(

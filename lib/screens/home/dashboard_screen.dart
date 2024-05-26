@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -73,28 +74,27 @@ class DashboardScreen extends StatelessWidget {
                           if (state is MealLoading) {
                             return const CircularProgressIndicator();
                           } else if (state is MealLoaded) {
-                            if (state.meals.isEmpty)
+                            if (state.meals.isEmpty) {
                               return const Text('No Data');
-                            var todayMeals = state.meals
-                                .where((element) =>
-                                    element.timestamp != null &&
-                                    Validators.dayIsToday(
-                                        element.timestamp!.toDate()))
-                                .toList();
-                            int todayCalories = todayMeals
-                                    .reduce((value, element) => Meal(
-                                        nutritionInformation:
-                                            NutritionInformation(
-                                                calories: (value
-                                                            .nutritionInformation
-                                                            ?.calories ??
-                                                        0) +
-                                                    (element.nutritionInformation
-                                                            ?.calories ??
-                                                        0))))
-                                    .nutritionInformation
-                                    ?.calories ??
-                                0;
+                            }
+                            List<Meal> todayMeals = [];
+                            try {
+                              todayMeals = state.meals
+                                  .where((element) =>
+                                      element.timestamp != null &&
+                                      Validators.dayIsToday(
+                                          element.timestamp?.toDate()))
+                                  .toList();
+                            } catch (e) {
+                              log("Error list: $e");
+                            }
+                            int todayCalories = 0;
+
+                            for (var meal in todayMeals) {
+                              todayCalories +=
+                                  meal.nutritionInformation?.calories ?? 0;
+                            }
+
                             if (todayMeals.isEmpty) return const SizedBox();
                             return Text(
                               "Total: $todayCalories",

@@ -23,7 +23,7 @@ import 'package:health_sync/utils/device_info.dart';
 import 'package:json_theme/json_theme.dart';
 import 'package:provider/provider.dart';
 
-late CameraDescription camera;
+List<CameraDescription> cameras = [];
 late BaseDeviceInfo deviceInfo;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,8 +37,7 @@ void main() async {
   final theme = ThemeDecoder.decodeThemeData(themeJson);
   deviceInfo = await DeviceInfo.initialize(DeviceInfoPlugin());
   if (DeviceInfo.isPhysicalDeviceWithCamera(deviceInfo)) {
-    final cameras = await availableCameras();
-    camera = cameras.first;
+    cameras = await availableCameras();
   }
   runApp(
     MultiBlocProvider(
@@ -100,7 +99,7 @@ class _MyAppState extends State<MyApp> {
     geminiProModel = GenerativeModel(
       // model: 'gemini-pro',
       model: "gemini-1.5-flash-latest",
-      apiKey: const String.fromEnvironment('API_KEY'),
+      apiKey: apiKey,
       generationConfig: GenerationConfig(
         temperature: 0.4,
         topK: 32,
@@ -124,10 +123,8 @@ class _MyAppState extends State<MyApp> {
       ),
       child: MaterialApp(
         title: 'health_sync',
-        // themeMode: ThemeMode.light,
-        // theme: AppThemes.lightTheme,
-        // darkTheme: AppThemes.darkTheme,
         theme: widget.themeData,
+        debugShowCheckedModeBanner: false,
         home: App(),
       ),
     );

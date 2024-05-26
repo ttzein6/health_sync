@@ -29,20 +29,18 @@ class AddImageToPromptWidget extends StatefulWidget {
 
 class _AddImageToPromptWidgetState extends State<AddImageToPromptWidget> {
   final ImagePicker picker = ImagePicker();
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
+
   bool flashOn = false;
 
   @override
   void initState() {
     super.initState();
-    if (DeviceInfo.isPhysicalDeviceWithCamera(deviceInfo)) {
-      _controller = CameraController(
-        camera,
-        ResolutionPreset.medium,
-      );
-      _initializeControllerFuture = _controller.initialize();
-    }
+  }
+
+  @override
+  void dispose() {
+    // _controller.dispose();
+    super.dispose();
   }
 
   Future<XFile> _showCamera() async {
@@ -56,23 +54,9 @@ class _AddImageToPromptWidgetState extends State<AddImageToPromptWidget> {
         );
       },
       pageBuilder: (context, animation, secondaryAnimation) {
-        return Dialog.fullscreen(
-          insetAnimationDuration: const Duration(seconds: 1),
-          child: FutureBuilder(
-            future: _initializeControllerFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                // If the Future is complete, display the preview.
-                return CameraView(
-                  controller: _controller,
-                  initializeControllerFuture: _initializeControllerFuture,
-                );
-              } else {
-                // Otherwise, display a loading indicator.
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
+        return const Dialog.fullscreen(
+          insetAnimationDuration: Duration(seconds: 1),
+          child: CameraView(),
         );
       },
     );
@@ -145,7 +129,7 @@ class _AddImageToPromptWidgetState extends State<AddImageToPromptWidget> {
             top: 8,
           ),
           child: Text(
-            'Meal Images',
+            'Meal Image',
             // style: MarketplaceTheme.dossierParagraph,
           ),
         ),
@@ -157,12 +141,13 @@ class _AddImageToPromptWidgetState extends State<AddImageToPromptWidget> {
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: AddImage(
-                    width: widget.width,
-                    height: widget.height,
-                    onTap: () async {
-                      final image = await _addImage();
-                      viewModel.addImage(image);
-                    }),
+                  width: widget.width,
+                  height: widget.height,
+                  onTap: () async {
+                    final image = await _addImage();
+                    viewModel.addImage(image);
+                  },
+                ),
               ),
               if (viewModel.userPrompt.image != null)
                 Padding(
@@ -183,12 +168,9 @@ class _AddImageToPromptWidgetState extends State<AddImageToPromptWidget> {
 }
 
 class CameraView extends StatefulWidget {
-  final CameraController controller;
-  final Future initializeControllerFuture;
-  const CameraView(
-      {super.key,
-      required this.controller,
-      required this.initializeControllerFuture});
+  const CameraView({
+    super.key,
+  });
 
   @override
   State<CameraView> createState() => _CameraViewState();
@@ -196,111 +178,181 @@ class CameraView extends StatefulWidget {
 
 class _CameraViewState extends State<CameraView> {
   bool flashOn = false;
+  late CameraController controller;
+  int currentCameraIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (DeviceInfo.isPhysicalDeviceWithCamera(deviceInfo)) {
+      controller = CameraController(
+        cameras[currentCameraIndex],
+        ResolutionPreset.medium,
+      );
+      controller.initialize().then((_) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {});
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void switchCamera() {
+    if (cameras.isEmpty) {
+      return;
+    }
+    currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
+    controller = CameraController(
+      cameras[currentCameraIndex],
+      ResolutionPreset.medium,
+    );
+    controller.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    CameraController controller = widget.controller;
-    return Stack(
-      children: [
-        Center(
-          child: AspectRatio(
-            aspectRatio: 9 / 14,
-            child: ClipRect(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  height: controller.value.previewSize!.width,
-                  width: controller.value.previewSize!.height,
-                  child: Center(
-                    child: CameraPreview(
-                      controller,
-                      // child: ElevatedButton(
-                      //   child: Text('Button'),
-                      //   onPressed: () {},
-                      // ),
+    EdgeInsets mediaQueryPadding = MediaQuery.paddingOf(context);
+    return FutureBuilder(
+      future: controller.initialize(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return Stack(
+          children: [
+            Center(
+              child: AspectRatio(
+                aspectRatio: 9 / 14,
+                child: ClipRect(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      height: controller.value.previewSize!.width,
+                      width: controller.value.previewSize!.height,
+                      child: Center(
+                        child: CameraPreview(controller),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 89.5,
-          child: Container(
-            color: Colors.black.withOpacity(.7),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 3),
-                  child: IconButton(
-                    icon: Icon(
-                      flashOn ? Symbols.flash_on : Symbols.flash_off,
-                      size: 40,
-                      color: flashOn ? Colors.yellowAccent : Colors.white,
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.black.withOpacity(.7),
+                padding: mediaQueryPadding.copyWith(bottom: 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 3),
+                      child: StatefulBuilder(
+                        builder: (context, setFlashState) {
+                          return IconButton(
+                            icon: Icon(
+                              flashOn ? Symbols.flash_on : Symbols.flash_off,
+                              size: 40,
+                              color:
+                                  flashOn ? Colors.yellowAccent : Colors.white,
+                            ),
+                            onPressed: () {
+                              controller.setFlashMode(
+                                  flashOn ? FlashMode.off : FlashMode.always);
+                              setFlashState(() {
+                                flashOn = !flashOn;
+                              });
+                            },
+                          );
+                        },
+                      ),
                     ),
-                    onPressed: () {
-                      controller.setFlashMode(
-                          flashOn ? FlashMode.off : FlashMode.always);
-                      setState(() {
-                        flashOn = !flashOn;
-                      });
-                    },
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 3),
+                      child: IconButton(
+                        icon: const Icon(
+                          Symbols.cancel,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 3),
-                  child: IconButton(
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 150,
+              child: Container(
+                color: Colors.black.withOpacity(.7),
+                padding: mediaQueryPadding.copyWith(top: 0, right: 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.switch_camera_outlined,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      onPressed: switchCamera,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 150,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
                     icon: const Icon(
-                      Symbols.cancel,
+                      Icons.camera,
                       color: Colors.white,
-                      size: 40,
+                      size: 70,
                     ),
                     onPressed: () async {
-                      Navigator.of(context).pop();
+                      try {
+                        final image = await controller.takePicture();
+                        if (!context.mounted) return;
+                        Navigator.of(context).pop(image);
+                      } catch (e) {
+                        rethrow;
+                      }
                     },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 150,
-          child: Container(
-            color: Colors.black.withOpacity(.7),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.camera,
-                    color: Colors.white,
-                    size: 70,
-                  ),
-                  onPressed: () async {
-                    try {
-                      await widget.initializeControllerFuture;
-                      final image = await controller.takePicture();
-                      if (!context.mounted) return;
-                      Navigator.of(context).pop(image);
-                    } catch (e) {
-                      rethrow;
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        )
-      ],
+          ],
+        );
+      },
     );
   }
 }
