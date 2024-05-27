@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:health_sync/models/health_data.dart';
 import 'package:health_sync/models/meal.dart';
-import 'package:health_sync/models/meal_old.dart';
 import 'package:health_sync/models/user.dart';
 
 class FirebaseService {
@@ -39,11 +38,12 @@ class FirebaseService {
   }
 
   Future<List<Meal>> getMeals(String userId) async {
-    QuerySnapshot snapshot = await _firestore
+    Query query = _firestore
         .collection('meals')
         .where('userId', isEqualTo: userId)
         .orderBy('timestamp', descending: true)
-        .get();
+        .limit(5);
+    QuerySnapshot snapshot = await query.get();
 
     return snapshot.docs
         .map(

@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_sync/blocs/meal/meal_bloc.dart';
@@ -52,15 +50,20 @@ class _MyWidgetState extends State<AddMealGemini> {
                 ),
               ),
               isLoading
-                  ? const CircularProgressIndicator()
+                  ? const CircularProgressIndicator.adaptive()
                   : ElevatedButton(
                       onPressed: () async {
                         await viewModel.submitPrompt().then((_) async {
                           if (viewModel.meal != null) {
+                            var mealBloc = BlocProvider.of<MealBloc>(context);
                             showDialog(
                               context: context,
-                              builder: (context) => MealDetail(
-                                meal: viewModel.meal!,
+                              builder: (context) =>
+                                  BlocProvider<MealBloc>.value(
+                                value: mealBloc,
+                                child: MealDetail(
+                                  meal: viewModel.meal!,
+                                ),
                               ),
                             );
                           }
@@ -120,7 +123,7 @@ class _TextField extends StatelessWidget {
 class MealDetail extends StatelessWidget {
   final Meal meal;
 
-  MealDetail({required this.meal});
+  const MealDetail({super.key, required this.meal});
 
   @override
   Widget build(BuildContext context) {
@@ -185,16 +188,8 @@ class MealDetail extends StatelessWidget {
                         fixedSize: MaterialStatePropertyAll(Size(200, 50))),
                     onPressed: () async {
                       var navState = Navigator.of(context);
-                      final userId = FirebaseAuth.instance.currentUser!.uid;
-                      await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(userId)
-                          .collection('meals')
-                          .doc(meal.id)
-                          .set(meal.toJson())
-                          .whenComplete(() {
-                        BlocProvider.of<MealBloc>(navState.context)
-                            .add(LoadMeals());
+                      // final userId = FirebaseAuth.instance.currentUser!.uid;
+                      BlocProvider.of<MealBloc>(context).add(AddMeal(meal, () {
                         context.read<PromptViewModel>().meal = null;
                         context
                             .read<PromptViewModel>()
@@ -203,7 +198,25 @@ class MealDetail extends StatelessWidget {
                         context.read<PromptViewModel>().resetPrompt();
                         navState.pop();
                         navState.pop();
-                      });
+                      }));
+                      // await FirebaseFirestore.instance
+                      //     .collection('users')
+                      //     .doc(userId)
+                      //     .collection('meals')
+                      //     .doc(meal.id)
+                      //     .set(meal.toJson())
+                      //     .whenComplete(() {
+                      //   BlocProvider.of<MealBloc>(navState.context)
+                      //       .add(LoadMeals());
+                      //   context.read<PromptViewModel>().meal = null;
+                      //   context
+                      //       .read<PromptViewModel>()
+                      //       .promptTextController
+                      //       .clear();
+                      //   context.read<PromptViewModel>().resetPrompt();
+                      //   navState.pop();
+                      //   navState.pop();
+                      // });
                     },
                     child: const Text("Add meal"),
                   ),

@@ -17,12 +17,34 @@ class MealLogScreen extends StatefulWidget {
 
 class _MealLogScreenState extends State<MealLogScreen> {
   late MealBloc mealBloc;
+  late ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       mealBloc = BlocProvider.of<MealBloc>(context)..add(LoadMeals());
+      _scrollController.addListener(_onScroll);
     });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _fetchMoreMeals();
+    }
+  }
+
+  _fetchMoreMeals() {
+    mealBloc.add(LoadMoreMeals());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,10 +68,13 @@ class _MealLogScreenState extends State<MealLogScreen> {
             label: "Add meal",
             child: const Icon(Icons.format_align_center),
             backgroundColor: Theme.of(context).colorScheme.primary,
-            onTap: () => showDialog(
-              context: context,
-              builder: (context) => const Dialog.fullscreen(
-                child: AddMealScreen(),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) => BlocProvider<MealBloc>.value(
+                  value: mealBloc,
+                  child: const AddMealScreen(),
+                ),
               ),
             ),
           ),
@@ -57,40 +82,90 @@ class _MealLogScreenState extends State<MealLogScreen> {
             label: "Add meal using AI",
             child: const Icon(Icons.memory),
             backgroundColor: Theme.of(context).colorScheme.primary,
-            onTap: () => showDialog(
-              context: context,
-              builder: (context) => const Dialog.fullscreen(
-                child: AddMealGemini(),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) => BlocProvider<MealBloc>.value(
+                  value: mealBloc,
+                  child: const AddMealGemini(),
+                ),
               ),
             ),
           ),
         ],
       ),
-      // FloatingActionButton.small(
-      //   onPressed: () {
-      //     showDialog(
-      //       context: context,
-      //       builder: (context) => Dialog.fullscreen(
-      //         child: AddMealScreen(),
-      //       ),
-      //     );
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
       body: RefreshIndicator.adaptive(
         onRefresh: () async =>
             BlocProvider.of<MealBloc>(context).add(LoadMeals()),
         child: BlocBuilder<MealBloc, MealState>(
           builder: (context, state) {
             if (state is MealLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator.adaptive());
             } else if (state is MealLoaded) {
-              return ListView.builder(
-                itemCount: state.meals.length,
-                itemBuilder: (context, index) {
-                  final meal = state.meals[index];
-                  return MealTile(meal: meal);
-                },
+              final todayMeals = <Meal>[];
+              final yesterdayMeals = <Meal>[];
+              final otherMeals = <Meal>[];
+
+              final now = DateTime.now();
+              final today = DateTime(now.year, now.month, now.day);
+              final yesterday = today.subtract(const Duration(days: 1));
+
+              for (final meal in state.meals) {
+                final mealDate = meal.timestamp!.toDate();
+                final mealDay =
+                    DateTime(mealDate.year, mealDate.month, mealDate.day);
+
+                if (mealDay == today) {
+                  todayMeals.add(meal);
+                } else if (mealDay == yesterday) {
+                  yesterdayMeals.add(meal);
+                } else {
+                  otherMeals.add(meal);
+                }
+              }
+
+              return ListView(
+                controller: _scrollController,
+                children: [
+                  if (todayMeals.isNotEmpty) ...[
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Today\'s Meals',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    ...todayMeals.map((meal) => MealTile(meal: meal)),
+                  ],
+                  if (yesterdayMeals.isNotEmpty) ...[
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Yesterday\'s Meals',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    ...yesterdayMeals.map((meal) => MealTile(meal: meal)),
+                  ],
+                  if (otherMeals.isNotEmpty) ...[
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Other Meals',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    ...otherMeals.map((meal) => MealTile(meal: meal)),
+                  ],
+                  if (state.loadingNewMeals)
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                ],
               );
             } else if (state is MealError) {
               return Center(child: Text('Error: ${state.error}'));

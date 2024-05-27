@@ -59,7 +59,7 @@ class RegisterPageState extends State<RegisterPage>
     showDialog(
         context: context,
         builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator.adaptive(),
             ));
     bool validate = true;
     // if (emailCtrl.text.isEmpty || passCtrl.text.isEmpty) {

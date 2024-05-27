@@ -8,7 +8,8 @@ class MealLoading extends MealState {}
 
 class MealLoaded extends MealState {
   final List<Meal> meals;
-  MealLoaded(this.meals);
+  final bool loadingNewMeals;
+  MealLoaded(this.meals, {this.loadingNewMeals = false});
 }
 
 class MealError extends MealState {

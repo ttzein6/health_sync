@@ -8,10 +8,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
-import '../../../main.dart';
-import '../../../theme.dart';
+import 'package:health_sync/main.dart' show camerasAvailable, deviceInfo;
 
-import '../../../widgets/prompt_image_widget.dart';
+import 'package:health_sync/widgets/prompt_image_widget.dart';
 
 class AddImageToPromptWidget extends StatefulWidget {
   const AddImageToPromptWidget({
@@ -31,17 +30,6 @@ class _AddImageToPromptWidgetState extends State<AddImageToPromptWidget> {
   final ImagePicker picker = ImagePicker();
 
   bool flashOn = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // _controller.dispose();
-    super.dispose();
-  }
 
   Future<XFile> _showCamera() async {
     final image = await showGeneralDialog<XFile?>(
@@ -180,23 +168,7 @@ class _CameraViewState extends State<CameraView> {
   bool flashOn = false;
   late CameraController controller;
   int currentCameraIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    if (DeviceInfo.isPhysicalDeviceWithCamera(deviceInfo)) {
-      controller = CameraController(
-        cameras[currentCameraIndex],
-        ResolutionPreset.medium,
-      );
-      controller.initialize().then((_) {
-        if (!mounted) {
-          return;
-        }
-        setState(() {});
-      });
-    }
-  }
+  List<CameraDescription> cameras = [];
 
   @override
   void dispose() {
@@ -209,27 +181,54 @@ class _CameraViewState extends State<CameraView> {
       return;
     }
     currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
+    if (mounted) {
+      setState(() {});
+    } else {
+      return;
+    }
+  }
+
+  Future<void> initializeCamera() async {
+    camerasAvailable = await availableCameras();
+    cameras = [];
+    bool addedFrontCamera = false;
+    bool addedBackCamera = false;
+    for (var camera in camerasAvailable) {
+      if (camera.lensDirection.name == "back" && !addedBackCamera) {
+        cameras.add(camera);
+        addedBackCamera = true;
+      } else if (camera.lensDirection.name == "front" && !addedFrontCamera) {
+        cameras.add(camera);
+        addedFrontCamera = true;
+      }
+    }
     controller = CameraController(
       cameras[currentCameraIndex],
-      ResolutionPreset.medium,
+      ResolutionPreset.high,
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
-    controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
+
+    await controller.initialize();
+    await controller.setFocusMode(FocusMode.auto);
+  }
+
+  void _onTapToFocus(TapDownDetails details) async {
+    final offsetX =
+        details.localPosition.dx / MediaQuery.of(context).size.width;
+    final offsetY =
+        details.localPosition.dy / MediaQuery.of(context).size.height;
+    await controller.setFocusPoint(Offset(offsetX, offsetY));
   }
 
   @override
   Widget build(BuildContext context) {
     EdgeInsets mediaQueryPadding = MediaQuery.paddingOf(context);
     return FutureBuilder(
-      future: controller.initialize(),
+      future: initializeCamera(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator.adaptive(),
           );
         }
         return Stack(
@@ -244,7 +243,9 @@ class _CameraViewState extends State<CameraView> {
                       height: controller.value.previewSize!.width,
                       width: controller.value.previewSize!.height,
                       child: Center(
-                        child: CameraPreview(controller),
+                        child: GestureDetector(
+                            onTapDown: _onTapToFocus,
+                            child: CameraPreview(controller)),
                       ),
                     ),
                   ),

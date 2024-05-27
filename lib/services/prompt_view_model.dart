@@ -87,7 +87,9 @@ class PromptViewModel extends ChangeNotifier {
       // handle no image or image of not-food
       if (content.text != null && content.text!.contains(badImageFailure)) {
         geminiFailureResponse = badImageFailure;
-        print(geminiFailureResponse);
+        if (kDebugMode) {
+          print(geminiFailureResponse);
+        }
       } else {
         log("GENERATED CONTENT:\n${content.text}");
         try {

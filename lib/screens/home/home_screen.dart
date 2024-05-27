@@ -23,9 +23,20 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     screens = [
       const Home(),
-      HealthSummaryScreen(),
+      const HealthSummaryScreen(),
       const MealLogScreen(),
-      Scaffold(appBar: AppBar(title: const Text("Chats"))),
+      Scaffold(
+        appBar: AppBar(title: const Text("Chats")),
+        body: const Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.face_retouching_natural_outlined),
+              Text(" Coming Soon!"),
+            ],
+          ),
+        ),
+      ),
       SettingsScreen(),
     ];
     bottomNavItems = <BottomNavigationBarItem>[

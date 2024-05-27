@@ -6,5 +6,10 @@ class LoadMeals extends MealEvent {}
 
 class AddMeal extends MealEvent {
   final Meal meal;
-  AddMeal(this.meal);
+  final Function() callBack;
+  AddMeal(this.meal, this.callBack);
 }
+
+class LoadMoreMeals extends MealEvent {}
+
+class ResetMeals extends MealEvent {}

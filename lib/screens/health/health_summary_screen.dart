@@ -28,7 +28,7 @@ class HealthSummaryScreen extends StatelessWidget {
               ),
             );
             if (state is HealthDataLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator.adaptive());
             } else if (state is HealthDataLoaded) {
               if (state.healthData.isEmpty) {
                 return const Center(
@@ -60,7 +60,7 @@ class HealthSummaryScreen extends StatelessWidget {
             } else if (state is HealthDataError) {
               return Center(child: Text('Error: ${state.error}'));
             } else {
-              return Center(child: Text('No Data'));
+              return const Center(child: Text('No Data'));
             }
           },
         ),

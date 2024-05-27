@@ -23,22 +23,23 @@ import 'package:health_sync/utils/device_info.dart';
 import 'package:json_theme/json_theme.dart';
 import 'package:provider/provider.dart';
 
-List<CameraDescription> cameras = [];
+List<CameraDescription> camerasAvailable = [];
 late BaseDeviceInfo deviceInfo;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final authRepository = AuthRepository();
-  final healthDataRepository = HealthDataRepository();
-  final mealRepository = MealRepository();
+
   final themeStr = await rootBundle.loadString('assets/theme/theme.json');
   final themeJson = jsonDecode(themeStr);
   final theme = ThemeDecoder.decodeThemeData(themeJson);
   deviceInfo = await DeviceInfo.initialize(DeviceInfoPlugin());
   if (DeviceInfo.isPhysicalDeviceWithCamera(deviceInfo)) {
-    cameras = await availableCameras();
+    camerasAvailable = await availableCameras();
   }
+  final healthDataRepository = HealthDataRepository();
+  final mealRepository = MealRepository();
   runApp(
     MultiBlocProvider(
       providers: [
@@ -143,6 +144,7 @@ class App extends StatelessWidget {
             return const _SplashScreen();
           }
           if (snapshot.hasData) {
+            BlocProvider.of<MealBloc>(context).add(ResetMeals());
             return const HomeScreen();
           }
           return const LoginOrRegister();
@@ -157,7 +159,7 @@ class _SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator.adaptive(),
       ),
     );
   }

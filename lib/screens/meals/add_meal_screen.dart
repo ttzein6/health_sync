@@ -6,7 +6,6 @@ import 'package:health_sync/blocs/meal/meal_bloc.dart';
 import 'package:health_sync/models/meal.dart';
 import 'package:health_sync/models/prompt_model.dart';
 import 'package:health_sync/services/image_upload_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddMealScreen extends StatefulWidget {
@@ -19,12 +18,16 @@ class AddMealScreen extends StatefulWidget {
 class _AddMealScreenState extends State<AddMealScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+
+  final TextEditingController _descController = TextEditingController();
   final TextEditingController _caloriesController = TextEditingController();
   final TextEditingController _proteinController = TextEditingController();
   final TextEditingController _fatController = TextEditingController();
   final TextEditingController _carbohydratesController =
       TextEditingController();
   final TextEditingController _ingredientsController = TextEditingController();
+
+  final TextEditingController _allergensController = TextEditingController();
   final TextEditingController promptTextController = TextEditingController();
 
   PromptData userPrompt = PromptData.empty();
@@ -44,11 +47,10 @@ class _AddMealScreenState extends State<AddMealScreen> {
         context: navState.context,
         builder: (context) => const Dialog.fullscreen(
           child: Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator.adaptive(),
           ),
         ),
       );
-      final userId = FirebaseAuth.instance.currentUser!.uid;
 
       String imageUrl = "";
       if (_image != null) {
@@ -67,6 +69,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
             fat: int.parse(_fatController.text),
             carbohydrates: int.parse(_carbohydratesController.text),
           ),
+          allergens: _allergensController.text
+              .split(',')
+              .map((s) => s.trim())
+              .toList(),
+          description: _descController.text,
           ingredients: _ingredientsController.text
               .split(',')
               .map((s) => s.trim())
@@ -75,16 +82,10 @@ class _AddMealScreenState extends State<AddMealScreen> {
           imageUrl: imageUrl,
         );
         meal.id = "${Timestamp.now().millisecondsSinceEpoch}_${meal.hashCode}";
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .collection('meals')
-            .doc(meal.id)
-            .set(meal.toJson());
-        BlocProvider.of<MealBloc>(navState.context).add(LoadMeals());
-        navState.pop();
-        navState.pop();
+        BlocProvider.of<MealBloc>(navState.context).add(AddMeal(meal, () {
+          navState.pop();
+          navState.pop();
+        }));
       } catch (e) {
         navState.pop();
         showDialog(
@@ -165,12 +166,21 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 },
               ),
               TextFormField(
+                controller: _descController,
+                decoration:
+                    const InputDecoration(labelText: 'Meal Description'),
+                validator: (value) {
+                  return null;
+                },
+              ),
+              TextFormField(
                 controller: _caloriesController,
                 decoration: const InputDecoration(labelText: 'Calories'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Please enter the calorie count';
+                  }
                   return null;
                 },
               ),
@@ -179,8 +189,9 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 decoration: const InputDecoration(labelText: 'Protein (g)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Please enter the protein content';
+                  }
                   return null;
                 },
               ),
@@ -189,8 +200,9 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 decoration: const InputDecoration(labelText: 'Fat (g)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Please enter the fat content';
+                  }
                   return null;
                 },
               ),
@@ -207,12 +219,24 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 },
               ),
               TextFormField(
+                controller: _allergensController,
+                decoration: const InputDecoration(
+                    labelText: 'Allergens (comma separated)'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the allergens';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
                 controller: _ingredientsController,
                 decoration: const InputDecoration(
                     labelText: 'Ingredients (comma separated)'),
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Please enter the ingredients';
+                  }
                   return null;
                 },
               ),

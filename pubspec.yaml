@@ -27,6 +27,7 @@ dependencies:
   material_symbols_icons: ^4.2744.0
   device_info_plus: ^10.1.0
   flutter_speed_dial: ^7.0.0
+  timeago: ^3.6.1
 
 dev_dependencies:
   flutter_test:

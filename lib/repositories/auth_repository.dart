@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:health_sync/models/user.dart' as userModel;
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:health_sync/models/user.dart' as user_model;
 
 class AuthRepository {
   final FirebaseAuth _firebaseAuth;
@@ -17,7 +18,7 @@ class AuthRepository {
       password: password,
     );
 
-    final userModel.User user = userModel.User(
+    final user_model.User user = user_model.User(
       id: userCredential.user!.uid,
       name: name,
       email: email,

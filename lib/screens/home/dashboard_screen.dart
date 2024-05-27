@@ -36,7 +36,7 @@ class DashboardScreen extends StatelessWidget {
                   BlocBuilder<HealthDataBloc, HealthDataState>(
                     builder: (context, state) {
                       if (state is HealthDataLoading) {
-                        return const CircularProgressIndicator();
+                        return const CircularProgressIndicator.adaptive();
                       } else if (state is HealthDataLoaded) {
                         return ListView.builder(
                           shrinkWrap: true,
@@ -72,7 +72,7 @@ class DashboardScreen extends StatelessWidget {
                       BlocBuilder<MealBloc, MealState>(
                         builder: (context, state) {
                           if (state is MealLoading) {
-                            return const CircularProgressIndicator();
+                            return const CircularProgressIndicator.adaptive();
                           } else if (state is MealLoaded) {
                             if (state.meals.isEmpty) {
                               return const Text('No Data');
@@ -116,7 +116,7 @@ class DashboardScreen extends StatelessWidget {
                     child: BlocBuilder<MealBloc, MealState>(
                       builder: (context, state) {
                         if (state is MealLoading) {
-                          return const CircularProgressIndicator();
+                          return const CircularProgressIndicator.adaptive();
                         } else if (state is MealLoaded) {
                           if (state.meals.isEmpty) return const Text('No Data');
                           var todayMeals = state.meals
@@ -152,7 +152,7 @@ class DashboardScreen extends StatelessWidget {
                   BlocBuilder<MealBloc, MealState>(
                     builder: (context, state) {
                       if (state is MealLoading) {
-                        return const CircularProgressIndicator();
+                        return const CircularProgressIndicator.adaptive();
                       } else if (state is MealLoaded) {
                         return Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -193,7 +193,7 @@ class DashboardScreen extends StatelessWidget {
                   BlocBuilder<MealBloc, MealState>(
                     builder: (context, state) {
                       if (state is MealLoading) {
-                        return const CircularProgressIndicator();
+                        return const CircularProgressIndicator.adaptive();
                       } else if (state is MealLoaded) {
                         var meals = state.meals;
                         meals.sort(

@@ -20,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
         builder: (context, user) {
           if (user == null) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator.adaptive(),
             );
           }
           return Padding(
@@ -60,7 +60,7 @@ class SettingsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                user?.name ?? "",
+                                user.name ?? "",
                                 style: const TextStyle(
                                   fontSize: 24,
                                 ),
@@ -69,7 +69,7 @@ class SettingsScreen extends StatelessWidget {
                                 height: 10,
                               ),
                               Text(
-                                user?.email ?? "",
+                                user.email ?? "",
                                 style: const TextStyle(
                                   fontSize: 18,
                                 ),

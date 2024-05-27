@@ -2,7 +2,7 @@ part of 'login_or_register.dart';
 
 class LoginPage extends StatefulWidget {
   final Function() registerOnTap;
-  LoginPage({super.key, required this.registerOnTap});
+  const LoginPage({super.key, required this.registerOnTap});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -26,11 +26,13 @@ class _LoginPageState extends State<LoginPage> {
     showDialog(
         context: context,
         builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator.adaptive(),
             ));
     bool validate = true;
     if (emailCtrl.text.isEmpty || passCtrl.text.isEmpty) {
-      print("email/pass empty");
+      if (kDebugMode) {
+        print("email/pass empty");
+      }
       validate = false;
       Navigator.of(context).pop();
     }
@@ -129,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                         TextSpan(
                           text: " Register",
                           recognizer: _tapGestureRecognizer,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.amber,
                           ),
                         ),
