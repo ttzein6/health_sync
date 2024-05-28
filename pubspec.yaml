@@ -28,6 +28,10 @@ dependencies:
   device_info_plus: ^10.1.0
   flutter_speed_dial: ^7.0.0
   timeago: ^3.6.1
+  animate_z_widget: ^0.0.8
+  health: ^10.2.0
+  permission_handler: ^11.3.1
+  carp_serializable: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -38,3 +42,4 @@ flutter:
   uses-material-design: true
   assets: 
     - assets/theme/theme.json
+    - assets/icons/

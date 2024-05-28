@@ -6,9 +6,21 @@ class HealthDataInitial extends HealthDataState {}
 
 class HealthDataLoading extends HealthDataState {}
 
+class HealthDataAuthorized extends HealthDataState {}
+
+class HealthDataNotAuthorized extends HealthDataState {}
+
+class FetchingHealthData extends HealthDataState {}
+
 class HealthDataLoaded extends HealthDataState {
-  final List<HealthData> healthData;
-  HealthDataLoaded(this.healthData);
+  final List<HealthDataPoint> healthData;
+  final int activeEnergyBurnedToday;
+  final int nbOfStepsToday;
+
+  HealthDataLoaded(
+      {required this.healthData,
+      this.activeEnergyBurnedToday = 0,
+      this.nbOfStepsToday = 0});
 }
 
 class HealthDataError extends HealthDataState {

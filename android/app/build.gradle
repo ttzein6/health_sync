@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.example.health_sync"
+    namespace "com.example.health_sync_ai"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 

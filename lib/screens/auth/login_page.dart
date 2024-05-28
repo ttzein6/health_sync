@@ -85,10 +85,16 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    const AnimateZWidget(
+                      animate: false,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: AssetImage('assets/icons/icon.png'),
+                      ),
+                    ),
                     const SizedBox(
                       height: 15,
                     ),
-                    // const SplashIcon(rotate: false),
                     const SizedBox(
                       height: 15,
                     ),

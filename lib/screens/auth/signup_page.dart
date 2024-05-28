@@ -2,7 +2,7 @@ part of 'login_or_register.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function() loginOnTap;
-  RegisterPage({super.key, required this.loginOnTap});
+  const RegisterPage({super.key, required this.loginOnTap});
 
   @override
   State<RegisterPage> createState() => RegisterPageState();
@@ -204,6 +204,13 @@ class _FillEmailPassPageState extends State<_FillEmailPassPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    const AnimateZWidget(
+                      animate: false,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: AssetImage('assets/icons/icon.png'),
+                      ),
+                    ),
                     const SizedBox(
                       height: 15,
                     ),

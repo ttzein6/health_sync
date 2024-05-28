@@ -63,7 +63,22 @@ class _MealBarChartState extends State<MealBarChart> {
                   return Text('${date.hour}:${date.minute}');
                 }),
           ),
-          rightTitles: const AxisTitles(),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  meta.formattedValue,
+                  style: const TextStyle(
+                    fontSize: 12,
+                  ),
+                );
+              },
+            ),
+          ),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: true),
         gridData: const FlGridData(show: true),
