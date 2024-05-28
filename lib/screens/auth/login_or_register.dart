@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:health_sync/services/image_upload_service.dart';
+import 'package:health_sync/utils/common_functions.dart';
 import 'dart:developer';
 import 'package:image_picker/image_picker.dart';
 

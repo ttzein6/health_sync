@@ -123,9 +123,23 @@ class _MealLogScreenState extends State<MealLogScreen> {
                   otherMeals.add(meal);
                 }
               }
-
+              if (todayMeals.isEmpty &&
+                  yesterdayMeals.isEmpty &&
+                  otherMeals.isEmpty) {
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    Expanded(
+                        child: SizedBox(
+                      height: 0.8 * MediaQuery.sizeOf(context).height,
+                      child: const Center(child: Text('No Meals Logged')),
+                    )),
+                  ],
+                );
+              }
               return ListView(
                 controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   if (todayMeals.isNotEmpty) ...[
                     const Padding(
@@ -170,7 +184,15 @@ class _MealLogScreenState extends State<MealLogScreen> {
             } else if (state is MealError) {
               return Center(child: Text('Error: ${state.error}'));
             } else {
-              return const Center(child: Text('No Meals Logged'));
+              return const SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(child: Text('No Meals Logged')),
+                  ],
+                ),
+              );
             }
           },
         ),

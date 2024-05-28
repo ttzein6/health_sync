@@ -16,10 +16,11 @@ class HealthDataLoaded extends HealthDataState {
   final List<HealthDataPoint> healthData;
   final int activeEnergyBurnedToday;
   final int nbOfStepsToday;
-
+  final List<HealthDataPoint> stepsData;
   HealthDataLoaded(
       {required this.healthData,
       this.activeEnergyBurnedToday = 0,
+      required this.stepsData,
       this.nbOfStepsToday = 0});
 }
 

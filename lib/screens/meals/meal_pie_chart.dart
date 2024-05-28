@@ -7,7 +7,7 @@ class MealPieChart extends StatefulWidget {
 
   const MealPieChart({super.key, required this.meals});
   @override
-  _MealPieChartState createState() => _MealPieChartState();
+  State<MealPieChart> createState() => _MealPieChartState();
 }
 
 class _MealPieChartState extends State<MealPieChart> {

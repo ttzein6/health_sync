@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, duplicate_ignore
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,12 +9,13 @@ import 'package:health_sync/models/meal.dart';
 import 'package:health_sync/models/prompt_model.dart';
 import 'package:health_sync/services/image_upload_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:health_sync/utils/common_functions.dart';
 
 class AddMealScreen extends StatefulWidget {
   const AddMealScreen({super.key});
 
   @override
-  _AddMealScreenState createState() => _AddMealScreenState();
+  State<AddMealScreen> createState() => _AddMealScreenState();
 }
 
 class _AddMealScreenState extends State<AddMealScreen> {
@@ -34,7 +37,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
   File? _image;
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImageUploadService.selectImage();
+    final pickedFile = await CommonFunctions.addImage(context);
     setState(() {
       _image = pickedFile;
     });
@@ -82,6 +85,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
           imageUrl: imageUrl,
         );
         meal.id = "${Timestamp.now().millisecondsSinceEpoch}_${meal.hashCode}";
+        // ignore: use_build_context_synchronously
         BlocProvider.of<MealBloc>(navState.context).add(AddMeal(meal, () {
           navState.pop();
           navState.pop();

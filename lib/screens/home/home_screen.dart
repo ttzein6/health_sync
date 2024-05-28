@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     screens = [
       const Home(),
-      HealthSummaryScreen(),
+      const HealthSummaryScreen(),
       const MealLogScreen(),
       Scaffold(
         appBar: AppBar(title: const Text("AI Dietation")),

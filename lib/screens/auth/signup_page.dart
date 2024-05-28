@@ -121,6 +121,7 @@ class RegisterPageState extends State<RegisterPage>
         log("ERROR $e");
         navState.pop();
         showDialog(
+          // ignore: use_build_context_synchronously
           context: navState.context,
           builder: (context) => AlertDialog.adaptive(
             content: const Text("Error occured"),
@@ -311,7 +312,7 @@ class _FillInfoPageState extends State<_FillInfoPage> {
   final ImagePicker picker = ImagePicker();
 
   selectImage() async {
-    var image = await ImageUploadService.selectImage();
+    var image = await CommonFunctions.addImage(context);
     setState(() {
       widget.pageState.setState(() {
         widget.pageState.pickedImage = image;

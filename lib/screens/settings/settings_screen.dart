@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_sync/blocs/auth/auth_bloc.dart';
 import 'package:health_sync/models/user.dart';
 import 'package:health_sync/services/auth_service.dart';
 
+// ignore: must_be_immutable
 class SettingsScreen extends StatelessWidget {
   SettingsScreen({super.key});
 

@@ -9,17 +9,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:health_sync/blocs/auth/auth_bloc.dart';
-import 'package:health_sync/models/user.dart' as userModel;
+import 'package:health_sync/models/user.dart' as user_model;
 
 class Auth {
-  static Future<userModel.User?> getUserById(String? id) async {
+  static Future<user_model.User?> getUserById(String? id) async {
     if (id == null) return null;
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(id)
-        .withConverter<userModel.User>(
+        .withConverter<user_model.User>(
             fromFirestore: (snapshot, _) =>
-                userModel.User.fromMap(snapshot.data() ?? {}),
+                user_model.User.fromMap(snapshot.data() ?? {}),
             toFirestore: (u, _) => u.toMap())
         .get()
         .then((value) => value.data());
@@ -56,7 +56,7 @@ class Auth {
     var imageUrl = await uploadImage(image);
     UserCredential userCredential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
-    userModel.User user = userModel.User(
+    user_model.User user = user_model.User(
       id: userCredential.user!.uid,
       name: name,
       email: email,

@@ -1,10 +1,8 @@
 import 'dart:developer';
 import 'dart:math' hide log;
 
-import 'package:animate_z_widget/animate_z_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:health_sync/blocs/health_data/health_data_bloc.dart';
 
 import 'package:health_sync/blocs/meal/meal_bloc.dart';
 import 'package:health_sync/models/meal.dart';
@@ -134,16 +132,18 @@ class DashboardScreen extends StatelessWidget {
                           if (state is MealLoading) {
                             return const CircularProgressIndicator.adaptive();
                           } else if (state is MealLoaded) {
-                            if (state.meals.isEmpty)
+                            if (state.meals.isEmpty) {
                               return const Text('No Data');
+                            }
                             var todayMeals = state.meals
                                 .where((element) =>
                                     element.timestamp != null &&
                                     Validators.dayIsToday(
                                         element.timestamp!.toDate()))
                                 .toList();
-                            if (todayMeals.isEmpty)
+                            if (todayMeals.isEmpty) {
                               return const Text('No Data');
+                            }
                             return Container(
                               height: 300,
                               constraints: const BoxConstraints(maxWidth: 500),

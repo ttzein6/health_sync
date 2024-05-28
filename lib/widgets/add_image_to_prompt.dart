@@ -1,14 +1,12 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:health_sync/services/prompt_view_model.dart';
-import 'package:health_sync/utils/device_info.dart';
+import 'package:health_sync/utils/common_functions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
-import 'package:health_sync/main.dart' show camerasAvailable, deviceInfo;
+import 'package:health_sync/main.dart' show camerasAvailable;
 
 import 'package:health_sync/widgets/prompt_image_widget.dart';
 
@@ -30,79 +28,6 @@ class _AddImageToPromptWidgetState extends State<AddImageToPromptWidget> {
   final ImagePicker picker = ImagePicker();
 
   bool flashOn = false;
-
-  Future<XFile> _showCamera() async {
-    final image = await showGeneralDialog<XFile?>(
-      context: context,
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return AnimatedOpacity(
-          opacity: animation.value,
-          duration: const Duration(milliseconds: 100),
-          child: child,
-        );
-      },
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return const Dialog.fullscreen(
-          insetAnimationDuration: Duration(seconds: 1),
-          child: CameraView(),
-        );
-      },
-    );
-
-    if (image != null) {
-      return image;
-    } else {
-      throw "failed to take image";
-    }
-  }
-
-  Future<XFile> _pickImage() async {
-    final image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      return image;
-    } else {
-      throw "failed to take image";
-    }
-  }
-
-  Future<File> _addImage() async {
-    if (DeviceInfo.isPhysicalDeviceWithCamera(deviceInfo)) {
-      return await showModalBottomSheet(
-          context: context,
-          showDragHandle: true,
-          builder: (context) => SizedBox(
-                height: MediaQuery.paddingOf(context).bottom + 150,
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: const Row(
-                        children: [
-                          Icon(Icons.photo),
-                          SizedBox(width: 5),
-                          Text("From Gallery"),
-                        ],
-                      ),
-                      onTap: () => _pickImage().then((value) =>
-                          Navigator.of(context).pop(File(value.path))),
-                    ),
-                    ListTile(
-                      title: const Row(
-                        children: [
-                          Icon(Icons.camera),
-                          SizedBox(width: 5),
-                          Text("Camera"),
-                        ],
-                      ),
-                      onTap: () => _showCamera().then((value) =>
-                          Navigator.of(context).pop(File(value.path))),
-                    ),
-                  ],
-                ),
-              ));
-    } else {
-      return await _pickImage().then((value) => File(value.path));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +57,7 @@ class _AddImageToPromptWidgetState extends State<AddImageToPromptWidget> {
                   width: widget.width,
                   height: widget.height,
                   onTap: () async {
-                    final image = await _addImage();
+                    final image = await CommonFunctions.addImage(context);
                     viewModel.addImage(image);
                   },
                 ),

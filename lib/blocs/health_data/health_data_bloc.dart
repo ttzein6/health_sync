@@ -67,6 +67,7 @@ class HealthDataBloc extends Bloc<HealthDataEvent, HealthDataState> {
       emit(FetchingHealthData());
       int activeEnergyBurnedToday = 0;
       int nbOfStepsToday = 0;
+      List<HealthDataPoint> stepsData = [];
       final now = DateTime.now();
       final yesterday = now.subtract(const Duration(hours: 24));
 
@@ -90,19 +91,23 @@ class HealthDataBloc extends Bloc<HealthDataEvent, HealthDataState> {
       }
 
       _healthDataList = health.removeDuplicates(_healthDataList);
+      await _fetchStepData.call().then((value) {
+        nbOfStepsToday = value.$1 ?? 0;
+        stepsData = value.$2;
+      });
 
-      nbOfStepsToday = (await _fetchStepData.call()) ?? 0;
       activeEnergyBurnedToday = (await _fetchActiveEnergy()) ?? 0;
 
       emit(HealthDataLoaded(
         healthData: _healthDataList,
         nbOfStepsToday: nbOfStepsToday,
+        stepsData: stepsData,
         activeEnergyBurnedToday: activeEnergyBurnedToday,
       ));
     });
   }
 
-  Future<int?> _fetchStepData() async {
+  Future<(int?, List<HealthDataPoint>)> _fetchStepData() async {
     final now = DateTime.now();
     final midnight = DateTime(now.year, now.month, now.day);
 
@@ -117,17 +122,15 @@ class HealthDataBloc extends Bloc<HealthDataEvent, HealthDataState> {
     try {
       int? steps = await health.getTotalStepsInInterval(midnight, now);
       debugPrint('Total number of steps: $steps');
+      List<HealthDataPoint> stepsData = await health.getHealthDataFromTypes(
+          types: [HealthDataType.STEPS], startTime: midnight, endTime: now);
 
-      // setState(() {
-      //   _nofSteps = steps ?? 0;
-      //   _state = steps == null ? AppState.NO_DATA : AppState.STEPS_READY;
-      // });
-      return steps ?? 0;
+      return (steps, stepsData);
     } catch (error) {
       debugPrint("Exception in getTotalStepsInInterval: $error");
     }
     // }
-    return null;
+    return (null, <HealthDataPoint>[]);
   }
 
   Future<int?> _fetchActiveEnergy() async {
