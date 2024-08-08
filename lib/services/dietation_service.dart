@@ -18,10 +18,8 @@ class DietationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   ImageUploadService imageUploadService = ImageUploadService();
   static String apiKey =
-      // const String.fromEnvironment('API_KEY',
-      //     defaultValue:
-      //         'key not found');
-      "AIzaSyCtiI8lgkEqsdw_qnrSb27fPD0IHTr6Bu8";
+      const String.fromEnvironment('API_KEY', defaultValue: 'key not found');
+
   final GenerativeModel geminiModel = GenerativeModel(
     model: "gemini-1.5-flash-latest",
     apiKey: apiKey,

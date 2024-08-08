@@ -77,13 +77,13 @@ class _MyAppState extends State<MyApp> {
   late GenerativeModel geminiProModel;
   @override
   void initState() {
-    const apiKey = "AIzaSyCtiI8lgkEqsdw_qnrSb27fPD0IHTr6Bu8";
-    // String.fromEnvironment('API_KEY', defaultValue: 'key not found');
-    // if (apiKey == 'key not found') {
-    //   throw InvalidApiKey(
-    //     'Key not found in environment. Please add an API key.',
-    //   );
-    // }
+    const apiKey =
+        String.fromEnvironment('API_KEY', defaultValue: 'key not found');
+    if (apiKey == 'key not found') {
+      throw InvalidApiKey(
+        'Key not found in environment. Please add an API key.',
+      );
+    }
 
     geminiVisionProModel = GenerativeModel(
       // model: 'gemini-pro-vision',
