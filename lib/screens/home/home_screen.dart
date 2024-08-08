@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:health_sync/screens/dietation/dietation_screen.dart';
 import 'package:health_sync/screens/health/health_summary_screen.dart';
 import 'package:health_sync/screens/meals/meal_log_screen.dart';
 import 'package:health_sync/screens/settings/settings_screen.dart';
@@ -25,18 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
       const Home(),
       const HealthSummaryScreen(),
       const MealLogScreen(),
-      Scaffold(
-        appBar: AppBar(title: const Text("AI Dietation")),
-        body: const Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.face_retouching_natural_outlined),
-              Text(" Coming Soon!"),
-            ],
-          ),
-        ),
-      ),
+      const DietationScreen(),
       SettingsScreen(),
     ];
     bottomNavItems = <BottomNavigationBarItem>[
@@ -125,9 +115,18 @@ class _HomeScreenState extends State<HomeScreen> {
               showUnselectedLabels: false,
               currentIndex: selectedIndex,
               onTap: (value) => setState(() {
+                if (value == 3) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    fullscreenDialog: true,
+                    builder: (context) => const DietationScreen(),
+                  ));
+                  return;
+                }
                 selectedIndex = value;
               }),
               items: bottomNavItems,
+              elevation: 5,
+              type: BottomNavigationBarType.shifting,
             ),
     );
   }

@@ -71,8 +71,7 @@ class RegisterPageState extends State<RegisterPage>
     //   validate = false;
     //   Navigator.of(context).pop();
     // }
-    if (pickedImage == null ||
-        emailCtrl.text.isEmpty ||
+    if (emailCtrl.text.isEmpty ||
         passCtrl.text.isEmpty ||
         confirmPassCtrl.text.isEmpty ||
         nameCtrl.text.isEmpty ||
@@ -94,7 +93,7 @@ class RegisterPageState extends State<RegisterPage>
           gender: genderCtrl.text,
           weight: int.parse(weightCtrl.text),
           height: int.parse(heightCtrl.text),
-          image: pickedImage!,
+          image: pickedImage,
         ).then((value) {
           navState.pop();
         });

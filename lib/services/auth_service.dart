@@ -50,10 +50,11 @@ class Auth {
     required int age,
     required int height,
     required int weight,
-    required File image,
+    required File? image,
     required String gender,
   }) async {
-    var imageUrl = await uploadImage(image);
+    var imageUrl;
+    if (image != null) imageUrl = await uploadImage(image);
     UserCredential userCredential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
     user_model.User user = user_model.User(

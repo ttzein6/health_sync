@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_sync/models/meal.dart';
+import 'package:health_sync/utils/common_functions.dart';
 import 'package:intl/intl.dart';
 
 class MealDetailsScreen extends StatelessWidget {
@@ -25,49 +26,185 @@ class MealDetailsScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Meal Name: ${meal.title}',
+                  Center(
+                    child: Text(
+                      '${meal.title}',
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold)),
+                          fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   if (meal.imageUrl != null &&
                       meal.imageUrl?.isNotEmpty == true)
-                    Container(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Image.network(
-                        meal.imageUrl!,
-                        fit: BoxFit.fitWidth,
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 300),
+                            child: GestureDetector(
+                              onTap: () => CommonFunctions.onImageTap(
+                                  context, meal.imageUrl ?? ""),
+                              child: Hero(
+                                tag: meal.imageUrl ?? meal.id!,
+                                child: Image.network(
+                                  meal.imageUrl!,
+                                  fit: BoxFit.fitWidth,
+                                  frameBuilder: (context, child, frame,
+                                          wasSynchronouslyLoaded) =>
+                                      Container(
+                                    child: child,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  if (meal.nutritionInformation?.calories != null)
-                    Text('Calories: ${meal.nutritionInformation?.calories}',
-                        style: const TextStyle(fontSize: 20)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (meal.nutritionInformation?.calories != null)
+                        NutritionFactsWidget(
+                          unit: 'Calories',
+                          value: (meal.nutritionInformation?.calories ?? 0)
+                              .toString(),
+                        ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      if (meal.nutritionInformation?.protein != null)
+                        NutritionFactsWidget(
+                          unit: 'Protein',
+                          value: '${meal.nutritionInformation?.protein}g',
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (meal.nutritionInformation?.fat != null)
+                        NutritionFactsWidget(
+                          unit: 'Fat',
+                          value: '${meal.nutritionInformation?.fat}g',
+                        ),
+                      const SizedBox(width: 16),
+                      if (meal.nutritionInformation?.carbohydrates != null)
+                        NutritionFactsWidget(
+                          unit: 'Carbs',
+                          value: '${meal.nutritionInformation?.carbohydrates}g',
+                        ),
+                    ],
+                  ),
                   const SizedBox(height: 16),
                   if (meal.ingredients != null)
-                    Text('Ingredients: ${meal.ingredients?.join(', ')}',
-                        style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 16),
-                  if (meal.nutritionInformation?.protein != null)
-                    Text('Protein: ${meal.nutritionInformation?.protein}g',
-                        style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 16),
-                  if (meal.nutritionInformation?.fat != null)
-                    Text('Fat: ${meal.nutritionInformation?.fat}g',
-                        style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 16),
-                  if (meal.nutritionInformation?.carbohydrates != null)
-                    Text(
-                        'Carbohydrates: ${meal.nutritionInformation?.carbohydrates}g',
-                        style: const TextStyle(fontSize: 16)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: Text(
+                            "Ingredients",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        Wrap(
+                          children: [
+                            for (var ing in meal.ingredients!)
+                              IngerdientWidget(
+                                text: ing,
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   const SizedBox(height: 16),
                   if (meal.timestamp != null)
                     Text(
-                        'Time: ${DateFormat("dd-MM-yyyy HH:mm:ss").format(meal.timestamp!.toDate())}',
+                      'Time: ${DateFormat("dd-MM-yyyy HH:mm:ss").format(meal.timestamp!.toDate())}',
+                      // style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  const SizedBox(height: 16),
+                  if (meal.description != null)
+                    const Text(
+                      "Description",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  if (meal.description != null)
+                    Text('${meal.description}',
                         style: const TextStyle(fontSize: 16)),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class NutritionFactsWidget extends StatelessWidget {
+  const NutritionFactsWidget(
+      {super.key, required this.value, required this.unit});
+  final String value;
+  final String unit;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.black45)),
+      child: Column(
+        children: [
+          Text(value,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+              )),
+          Text(
+            unit,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class IngerdientWidget extends StatelessWidget {
+  const IngerdientWidget({super.key, required this.text});
+  final String text;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black38),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 16, color: Colors.black),
       ),
     );
   }

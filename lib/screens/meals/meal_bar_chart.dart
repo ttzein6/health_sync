@@ -40,7 +40,7 @@ class _MealBarChartState extends State<MealBarChart> {
   @override
   Widget build(BuildContext context) {
     return BarChart(
-      swapAnimationDuration: Durations.extralong2,
+      swapAnimationDuration: Durations.medium1,
       BarChartData(
         barGroups: [
           ..._mealSpots.map(
@@ -66,7 +66,8 @@ class _MealBarChartState extends State<MealBarChart> {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40,
+              reservedSize: 50,
+              interval: 50,
               getTitlesWidget: (value, meta) {
                 return Text(
                   meta.formattedValue,
@@ -80,7 +81,9 @@ class _MealBarChartState extends State<MealBarChart> {
           rightTitles:
               const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
-        borderData: FlBorderData(show: true),
+        borderData: FlBorderData(
+            show: true,
+            border: Border.all(color: Theme.of(context).colorScheme.secondary)),
         gridData: const FlGridData(show: true),
       ),
     );

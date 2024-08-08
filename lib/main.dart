@@ -31,7 +31,10 @@ void main() async {
 
   final authRepository = AuthRepository();
 
-  final themeStr = await rootBundle.loadString('assets/theme/theme.json');
+  // final themeStr = await rootBundle.loadString('assets/theme/theme.json');
+  final themeStr =
+      await rootBundle.loadString('assets/theme/appainter_theme.json');
+
   final themeJson = jsonDecode(themeStr);
   final theme = ThemeDecoder.decodeThemeData(themeJson);
   deviceInfo = await DeviceInfo.initialize(DeviceInfoPlugin());
@@ -47,7 +50,8 @@ void main() async {
           create: (context) => AuthBloc(authRepository)..add(AppStarted()),
         ),
         BlocProvider<HealthDataBloc>(
-          create: (context) => HealthDataBloc(healthDataRepository),
+          create: (context) =>
+              HealthDataBloc(healthDataRepository)..add(LoadHealthData()),
         ),
         BlocProvider<MealBloc>(
           create: (context) => MealBloc(mealRepository)..add(LoadMeals()),

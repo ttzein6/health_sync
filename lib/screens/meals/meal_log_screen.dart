@@ -57,15 +57,16 @@ class _MealLogScreenState extends State<MealLogScreen> {
         icon: Icons.add,
         activeIcon: Icons.close,
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
-        activeBackgroundColor: Theme.of(context).colorScheme.onBackground,
+        activeBackgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.primary,
-        // activeForegroundColor: Colors.black,
+        activeForegroundColor: Colors.white,
         // animatedIconTheme: IconThemeData(),
         spacing: 20,
         spaceBetweenChildren: 10,
         children: [
           SpeedDialChild(
             label: "Add meal",
+            foregroundColor: Colors.white,
             child: const Icon(Icons.format_align_center),
             backgroundColor: Theme.of(context).colorScheme.primary,
             onTap: () => Navigator.of(context).push(
@@ -80,6 +81,7 @@ class _MealLogScreenState extends State<MealLogScreen> {
           ),
           SpeedDialChild(
             label: "Add meal using AI",
+            foregroundColor: Colors.white,
             child: const Icon(Icons.memory),
             backgroundColor: Theme.of(context).colorScheme.primary,
             onTap: () => Navigator.of(context).push(
@@ -215,11 +217,29 @@ class MealTile extends StatelessWidget {
       },
       leading: meal.imageUrl == null || meal.imageUrl?.isEmpty == true
           ? null
-          : SizedBox.square(
-              dimension: 50,
-              child: CircleAvatar(
-                radius: 10,
-                backgroundImage: NetworkImage(meal.imageUrl!),
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(25),
+              child: Image.network(
+                meal.imageUrl!,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return SizedBox.square(
+                    dimension: 50,
+                    child: CircularProgressIndicator.adaptive(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.fastfood),
               ),
             ),
       title: Text(meal.title ?? ""),

@@ -43,18 +43,33 @@ class SettingsScreen extends StatelessWidget {
                                 const SizedBox(
                                   width: 20,
                                 ),
-                                SizedBox(
-                                  height: 100,
-                                  width: 100,
-                                  child: CircleAvatar(
-                                    backgroundImage: Image.network(
-                                      user.imageUrl ?? "",
-                                      loadingBuilder:
-                                          (context, child, loadingProgress) {
-                                        return const Icon(
-                                            Icons.account_circle_outlined);
-                                      },
-                                    ).image,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: Image.network(
+                                    user.imageUrl ?? "",
+                                    height: 100,
+                                    width: 100,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      }
+                                      return Opacity(
+                                        opacity: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : 1,
+                                        child: const Icon(
+                                          Icons.account_circle_outlined,
+                                          size: 50,
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                                 const SizedBox(

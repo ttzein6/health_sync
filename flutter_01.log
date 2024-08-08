@@ -1,0 +1,110 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run
+
+## exception
+
+FileSystemException: FileSystemException: Creation of temporary directory failed, path = '/var/folders/kn/p3hkbxln5td4mv57_1sjrjr00000gn/T/flutter_tools.' (OS Error: No space left on device, errno = 28)
+
+```
+#0      _Directory.createTempSync (dart:io/directory_impl.dart:170:7)
+#1      ForwardingDirectory.createTempSync (package:file/src/forwarding/forwarding_directory.dart:28:21)
+#2      LocalFileSystem.systemTempDirectory (package:flutter_tools/src/base/file_system.dart:236:46)
+#3      ForwardingFileSystem.systemTempDirectory (package:file/src/forwarding/forwarding_file_system.dart:33:49)
+#4      IOSCoreDeviceControl._listCoreDevices (package:flutter_tools/src/ios/core_devices.dart:65:49)
+#5      IOSCoreDeviceControl.getCoreDevices (package:flutter_tools/src/ios/core_devices.dart:122:48)
+#6      XCDevice.getAvailableIOSDevices (package:flutter_tools/src/macos/xcdevice.dart:487:72)
+<asynchronous suspension>
+#7      PollingDeviceDiscovery._populateDevices (package:flutter_tools/src/device.dart:547:36)
+<asynchronous suspension>
+#8      Future.wait.<anonymous closure> (dart:async/future.dart:524:21)
+<asynchronous suspension>
+#9      DeviceManager.getAllDevices (package:flutter_tools/src/device.dart:198:40)
+<asynchronous suspension>
+#10     DeviceBasedDevelopmentArtifacts.requiredArtifacts (package:flutter_tools/src/runner/flutter_command.dart:1908:34)
+<asynchronous suspension>
+#11     FlutterCommand.verifyThenRunCommand (package:flutter_tools/src/runner/flutter_command.dart:1692:37)
+<asynchronous suspension>
+#12     FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1394:27)
+<asynchronous suspension>
+#13     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#14     CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#15     FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:372:9)
+<asynchronous suspension>
+#16     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#17     FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:308:5)
+<asynchronous suspension>
+#18     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:130:9)
+<asynchronous suspension>
+#19     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#20     main (package:flutter_tools/executable.dart:93:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[32m[✓][39m Flutter (Channel stable, 3.22.3, on macOS 14.6 23G80 darwin-arm64, locale en-LB)
+    [32m•[39m Flutter version 3.22.3 on channel stable at /Users/tamerelzein/Developer/flutter
+    [32m•[39m Upstream repository https://github.com/flutter/flutter.git
+    [32m•[39m Framework revision b0850beeb2 (2 weeks ago), 2024-07-16 21:43:41 -0700
+    [32m•[39m Engine revision 235db911ba
+    [32m•[39m Dart version 3.4.4
+    [32m•[39m DevTools version 2.34.3
+
+[32m[✓][39m Android toolchain - develop for Android devices (Android SDK version 34.0.0)
+    [32m•[39m Android SDK at /Users/tamerelzein/Library/Android/sdk
+    [32m•[39m Platform android-34, build-tools 34.0.0
+    [32m•[39m Java binary at: /Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java
+    [32m•[39m Java version OpenJDK Runtime Environment (build 17.0.10+0-17.0.10b1087.21-11572160)
+    [32m•[39m All Android licenses accepted.
+
+[32m[✓][39m Xcode - develop for iOS and macOS (Xcode 15.4)
+    [32m•[39m Xcode at /Applications/Xcode.app/Contents/Developer
+    [32m•[39m Build 15F31d
+    [32m•[39m CocoaPods version 1.15.2
+
+[32m[✓][39m Chrome - develop for the web
+    [32m•[39m Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+
+[32m[✓][39m Android Studio (version 2023.3)
+    [32m•[39m Android Studio at /Applications/Android Studio.app/Contents
+    [32m•[39m Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    [32m•[39m Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+    [32m•[39m Java version OpenJDK Runtime Environment (build 17.0.10+0-17.0.10b1087.21-11572160)
+
+[32m[✓][39m IntelliJ IDEA Community Edition (version 2022.3.3)
+    [32m•[39m IntelliJ at /Applications/IntelliJ IDEA CE.app
+    [32m•[39m Flutter plugin version 72.1.4
+    [32m•[39m Dart plugin version 223.8888
+
+[32m[✓][39m VS Code (version 1.91.1)
+    [32m•[39m VS Code at /Applications/Visual Studio Code.app/Contents
+    [32m•[39m Flutter extension version 3.95.20240801
+
+[32m[✓][39m Connected device (5 available)
+    [32m•[39m T.Z (mobile)                    • 00008130-001C4461287A8D3A            • ios
+      • iOS 17.6 21G80
+    [32m•[39m iPhone 15 Pro Max (mobile)      • 3229AB4D-306A-4423-BBB4-E1501A47912A • ios
+      • com.apple.CoreSimulator.SimRuntime.iOS-17-4 (simulator)
+    [32m•[39m macOS (desktop)                 • macos                                •
+      darwin-arm64   • macOS 14.6 23G80 darwin-arm64
+    [32m•[39m Mac Designed for iPad (desktop) • mac-designed-for-ipad                • darwin
+      • macOS 14.6 23G80 darwin-arm64
+    [32m•[39m Chrome (web)                    • chrome                               •
+      web-javascript • Google Chrome 127.0.6533.89
+
+[32m[✓][39m Network resources
+    [32m•[39m All expected network resources are available.
+
+[32m•[39m No issues found!
+```
